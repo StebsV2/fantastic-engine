@@ -11,15 +11,31 @@ export async function store(req : Request,res : Response){
 
 export async function list(req : Request,res: Response){
     const todos = await prisma.todo.findMany() 
-     return res.json(todos);
+    return res.json(todos);
 }
+
 export async function show(req : Request,res : Response){
     const {id} = req.params
-   const todo = await prisma.todo.findUnique({where: {id : parseInt(id)}}) 
+    const todo = await prisma.todo.findUnique({where: {id : parseInt(id)}}) 
     return res.json(todo);
-} 
+}
+
 export async function update(req : Request,res : Response) {
-    //noi
-    return res.status(200).send("not implemented")
-    
+    let todo
+    let status
+    try{
+        const {id} = req.params
+        const data= req.body
+        todo= await prisma.todo.update({
+            where : {
+                id: parseInt(id)
+            },
+            data : data
+        })
+        status=200
+    }catch(err){
+        status=400
+        todo={msg: "ID non trovato"}
+    }
+    return res.status(status).json(todo)
 }
